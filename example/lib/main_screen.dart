@@ -14,12 +14,13 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  final message = 'Hey this is a QR code. Change the value for custom QR.';
+  QrEyeDot qrEyeDot = QrEyeDot.square;
+  QrEyeOuter qrEyeOuter = QrEyeOuter.square;
+  QrDataModuleShape qrDataShape = QrDataModuleShape.square;
+
   @override
   Widget build(BuildContext context) {
-    const String message =
-        // ignore: lines_longer_than_80_chars
-        'Hey this is a QR code. Change this value in the main_screen.dart file.';
-
     /*final qrFutureBuilder = FutureBuilder<ui.Image>(
       future: _loadOverlayImage(),
       builder: (ctx, snapshot) {
@@ -70,56 +71,99 @@ class _MainScreenState extends State<MainScreen> {
                   child: Container(
                     width: 280,
                     child: QrImageView(
-                      data: message,
+                      data: 'https://qr.staging.ypb.io/yEuyy2uvkE',
                       version: QrVersions.auto,
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomLeft,
-                        end: Alignment.topRight,
-                        colors: [Color(0xff289f70), Color(0xff134b38)],
+                      errorCorrectionLevel: QrErrorCorrectLevel.H,
+                      eyeStyle: QrEyeStyle(
+                        eyeDot: qrEyeDot,
+                        eyeOuter: qrEyeOuter,
+                        color: Colors.black,
                       ),
-                      /*gradient: LinearGradient(
-                        begin: Alignment.bottomLeft,
-                        end: Alignment.topRight,
-                        colors: [
-                          Color(0xffff0000),
-                          Color(0xffffa500),
-                          Color(0xffffff00),
-                          Color(0xff008000),
-                          Color(0xff0000ff),
-                          Color(0xff4b0082),
-                          Color(0xffee82ee),
-                        ],
-                      ),*/
-                      eyeStyle: const QrEyeStyle(
-                        eyeShape: QrEyeShape.square,
-                        color: Color(0xff128760),
-                        borderRadius: 10,
+                      dataModuleStyle: QrDataModuleStyle(
+                        dataModuleShape: qrDataShape,
+                        color: Colors.black,
                       ),
-                      dataModuleStyle: const QrDataModuleStyle(
-                        dataModuleShape: QrDataModuleShape.square,
-                        color: Color(0xff1a5441),
-                        borderRadius: 5,
-                        roundedOutsideCorners: true,
-                      ),
-                      embeddedImage: AssetImage('assets/images/4.0x/logo_yakka_transparent.png'),
-                      embeddedImageStyle: QrEmbeddedImageStyle(
-                        size: Size.square(40),
-                        color: Colors.white,
-                        safeArea: true,
-                        safeAreaMultiplier: 1.1,
-                        embeddedImageShape: EmbeddedImageShape.square,
-                        shapeColor: Color(0xff128760),
-                        borderRadius: 10,
-                      ),
+                      // embeddedImage: AssetImage('assets/images/4.0x/logo_yakka_transparent.png'),
+                      // embeddedImageStyle: QrEmbeddedImageStyle(
+                      //   // 0.4 size of qr
+                      //   size: Size.square(112),
+                      //   color: Colors.white,
+                      //   embeddedImageShape: EmbeddedImageShape.square,
+                      //   shapeColor: Color(0xff128760),
+                      // ),
                     ),
                   ),
                 ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40)
-                    .copyWith(bottom: 40),
+                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
                 child: Text(message),
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Eye Dot'),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  DropdownButton<QrEyeDot>(
+                      value: qrEyeDot,
+                      items: QrEyeDot.values
+                          .map((eyeDot) => DropdownMenuItem<QrEyeDot>(
+                              value: eyeDot, child: Text(eyeDot.name)))
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          qrEyeDot = value ?? qrEyeDot;
+                        });
+                      }),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Eye Outer'),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  DropdownButton<QrEyeOuter>(
+                      value: qrEyeOuter,
+                      items: QrEyeOuter.values
+                          .map((eyeOuter) => DropdownMenuItem<QrEyeOuter>(
+                              value: eyeOuter, child: Text(eyeOuter.name)))
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          qrEyeOuter = value ?? qrEyeOuter;
+                        });
+                      }),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Data Shape'),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  DropdownButton<QrDataModuleShape>(
+                      value: qrDataShape,
+                      items: QrDataModuleShape.values
+                          .map((dataShape) =>
+                              DropdownMenuItem<QrDataModuleShape>(
+                                  value: dataShape,
+                                  child: Text(dataShape.name)))
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          qrDataShape = value ?? qrDataShape;
+                        });
+                      }),
+                ],
+              ),
+              const SizedBox(
+                height: 40,
+              )
             ],
           ),
         ),

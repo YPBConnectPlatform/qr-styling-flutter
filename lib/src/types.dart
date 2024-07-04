@@ -5,8 +5,6 @@
  */
 
 import 'package:flutter/widgets.dart';
-import 'dart:ui';
-
 
 /// Represents a specific element / part of a QR code. This is used to isolate
 /// the different parts so that we can style and modify specific parts
@@ -40,17 +38,50 @@ enum FinderPatternPosition {
   bottomLeft,
 }
 
-/// Enumeration representing the finder pattern eye's shape.
-enum QrEyeShape {
-  /// Use square eye frame.
+/// for determining dot / inner of eye
+enum QrEyeDot {
+  /// square eye dot
   square,
 
-  /// Use circular eye frame.
+  /// circle eye dot
+  dot
+}
+
+/// Determining data module type
+enum QrDataModuleShape {
+  /// normal square
+  square,
+
+  /// rounded with fixed radius
+  rounded,
+
+  /// extra rounded with fixed radius
+  extraRounded,
+
+  /// circle
+  dots,
+
+  /// top left, bottom right radius
+  classy,
+
+  /// top left, bottom right radius more rounded
+  classyRounded
+}
+
+/// Enumeration representing the finder pattern eye's shape.
+enum QrEyeOuter {
+  /// square outer
+  square,
+
+  /// rounded outer
+  rounded,
+
+  /// circle outer
   circle,
 }
 
 /// Enumeration representing the shape of Data modules inside QR.
-enum QrDataModuleShape {
+enum QrEyeModuleShape {
   /// Use square dots.
   square,
 
@@ -75,27 +106,33 @@ enum EmbeddedImageShape {
 class QrEyeStyle {
   /// Create a new set of styling options for QR Eye.
   const QrEyeStyle({
-    this.eyeShape = QrEyeShape.square,
+    this.eyeOuter = QrEyeOuter.square,
+    this.eyeDot = QrEyeDot.square,
     this.color,
-    this.borderRadius = 0,
   });
 
-  /// Eye shape.
-  final QrEyeShape eyeShape;
+  /// Eye outer.
+  final QrEyeOuter eyeOuter;
+
+  /// Eye dot.
+  final QrEyeDot eyeDot;
 
   /// Color to tint the eye.
   final Color? color;
 
-  /// Border radius
-  final double borderRadius;
+  /// Border radius figma max value 120 / current max 24
+  /// value / 120 * 24 = setting value
+  final double borderRadius = 13.5;
 
   @override
-  int get hashCode => eyeShape.hashCode ^ color.hashCode;
+  int get hashCode => eyeOuter.hashCode ^ eyeDot.hashCode ^ color.hashCode;
 
   @override
   bool operator ==(Object other) {
     if (other is QrEyeStyle) {
-      return eyeShape == other.eyeShape && color == other.color;
+      return eyeOuter == eyeOuter &&
+          eyeDot == other.eyeDot &&
+          color == other.color;
     }
     return false;
   }
@@ -108,7 +145,6 @@ class QrDataModuleStyle {
   const QrDataModuleStyle({
     this.dataModuleShape = QrDataModuleShape.square,
     this.color,
-    this.borderRadius = 0,
     this.roundedOutsideCorners = false,
     double? outsideBorderRadius,
   }) : _outsideBorderRadius = outsideBorderRadius;
@@ -119,9 +155,6 @@ class QrDataModuleStyle {
   /// Color to tint the data modules.
   final Color? color;
 
-  /// Border radius
-  final double borderRadius;
-
   /// Only [QrDataModuleShape.square]
   /// true for rounded outside corners
   final bool roundedOutsideCorners;
@@ -130,14 +163,35 @@ class QrDataModuleStyle {
   /// Border radius for outside corners
   final double? _outsideBorderRadius;
 
+  /// for getting static borderRadius
+  double get borderRadius {
+    switch (dataModuleShape) {
+      case QrDataModuleShape.rounded:
+      case QrDataModuleShape.classy:
+        return 5.5;
+      case QrDataModuleShape.classyRounded:
+      case QrDataModuleShape.extraRounded:
+        return 10;
+      default:
+        return 0;
+    }
+  }
+
+  /// check whether the module shape is classy or not
+  bool get isClassy {
+    return dataModuleShape == QrDataModuleShape.classyRounded ||
+        dataModuleShape == QrDataModuleShape.classy;
+  }
+
   /// if [roundedOutsideCorners] == true, then by default use [borderRadius]
   /// [_outsideBorderRadius] <= [borderRadius]
   /// Get border radius for outside corners
   double get outsideBorderRadius {
-    if(roundedOutsideCorners) {
-      return _outsideBorderRadius != null
-          && _outsideBorderRadius! < borderRadius
-          ? _outsideBorderRadius! : borderRadius;
+    if (roundedOutsideCorners) {
+      return _outsideBorderRadius != null &&
+              _outsideBorderRadius! < borderRadius
+          ? _outsideBorderRadius!
+          : borderRadius;
     }
     return 0;
   }

@@ -36,16 +36,17 @@ class QrImageView extends StatefulWidget {
     this.embeddedImageStyle = const QrEmbeddedImageStyle(),
     this.semanticsLabel = 'qr code',
     this.eyeStyle = const QrEyeStyle(
-      eyeShape: QrEyeShape.square,
+      eyeOuter: QrEyeOuter.square,
+      eyeDot: QrEyeDot.square,
     ),
     this.dataModuleStyle = const QrDataModuleStyle(
       dataModuleShape: QrDataModuleShape.square,
     ),
     this.embeddedImageEmitsError = false,
     this.gradient,
-  }) : assert(
-        QrVersions.isSupportedVersion(version),
-        'QR code version $version is not supported',
+  })  : assert(
+          QrVersions.isSupportedVersion(version),
+          'QR code version $version is not supported',
         ),
         _data = data,
         _qrCode = null;
@@ -69,7 +70,8 @@ class QrImageView extends StatefulWidget {
     this.embeddedImageStyle = const QrEmbeddedImageStyle(),
     this.semanticsLabel = 'qr code',
     this.eyeStyle = const QrEyeStyle(
-      eyeShape: QrEyeShape.square,
+      eyeOuter: QrEyeOuter.square,
+      eyeDot: QrEyeDot.square,
       color: Colors.black,
     ),
     this.dataModuleStyle = const QrDataModuleStyle(
@@ -78,9 +80,9 @@ class QrImageView extends StatefulWidget {
     ),
     this.embeddedImageEmitsError = false,
     this.gradient,
-  }) : assert(
-        QrVersions.isSupportedVersion(version),
-        'QR code version $version is not supported',
+  })  : assert(
+          QrVersions.isSupportedVersion(version),
+          'QR code version $version is not supported',
         ),
         _data = null,
         _qrCode = qr;
@@ -187,8 +189,7 @@ class _QrImageViewState extends State<QrImageView> {
           return _errorWidget(context, constraints, _validationResult.error);
         }
         // no error, build the regular widget
-        final widgetSize =
-            widget.size ?? constraints.biggest.shortestSide;
+        final widgetSize = widget.size ?? constraints.biggest.shortestSide;
         if (widget.embeddedImage != null) {
           // if requesting to embed an image then we need to load via a
           // FutureBuilder because the image provider will be async.
@@ -219,16 +220,15 @@ class _QrImageViewState extends State<QrImageView> {
 
   Widget _qrWidget(ui.Image? image, double edgeLength) {
     final painter = QrPainter.withQr(
-      qr: _qr!,
-      // ignore: deprecated_member_use_from_same_package
-      color: widget.foregroundColor,
-      gapless: widget.gapless,
-      embeddedImageStyle: widget.embeddedImageStyle,
-      embeddedImage: image,
-      eyeStyle: widget.eyeStyle,
-      dataModuleStyle: widget.dataModuleStyle,
-      gradient: widget.gradient
-    );
+        qr: _qr!,
+        // ignore: deprecated_member_use_from_same_package
+        color: widget.foregroundColor,
+        gapless: widget.gapless,
+        embeddedImageStyle: widget.embeddedImageStyle,
+        embeddedImage: image,
+        eyeStyle: widget.eyeStyle,
+        dataModuleStyle: widget.dataModuleStyle,
+        gradient: widget.gradient);
     return _QrContentView(
       edgeLength: edgeLength,
       backgroundColor: widget.backgroundColor,
